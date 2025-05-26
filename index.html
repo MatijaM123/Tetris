@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Tetris Layout</title>
+    <link rel="stylesheet" href="stil.css" />
+  </head>
+  <body>
+    <div id="helpModal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="closeModal" onclick="closeHelpModal()">&times;</span>
+        <iframe
+          src="help.html"
+          width="100%"
+          height="500px"
+          style="border: none"
+        ></iframe>
+      </div>
+    </div>
+    <div id="wrapper">
+      <div id="top-bar">
+        <a id="help" href="help.html">HELP</a>
+      </div>
+      <div class="container">
+        <!-- LEFT PANEL -->
+        <div class="panel">
+          <div class="label-box">
+            <span>HOLD</span>
+            <canvas id="savedBlockCanvas"></canvas>
+          </div>
+        </div>
+
+        <!-- GAME BOARD -->
+        <div>
+          <canvas class="game-board" id="tetris"></canvas>
+          <div class="score-box">
+            <span>SCORE</span>
+            <div id="liveScore">0</div>
+          </div>
+          <div id="start">
+            <button id="startButton">Start Game</button>
+          </div>
+          <div id="gameOverScreen">
+            <h2>Game Over</h2>
+            <button id="restartButton">Play Again</button>
+          </div>
+          <div
+            id="message"
+            style="
+              position: absolute;
+              top: 15px;
+              left: 50%;
+              transform: translateX(-50%);
+              color: gold;
+              font-size: 24px;
+              font-family: sans-serif;
+              text-align: center;
+              display: none;
+            "
+          ></div>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="panel">
+          <div class="label-box">
+            <span>NEXT</span>
+            <canvas id="nextBlockCanvas"></canvas>
+          </div>
+          <button class="pause-button" onclick="togglePause()">||</button>
+        </div>
+      </div>
+      <script src="main.js"></script>
+    </div>
+  </body>
+</html>
