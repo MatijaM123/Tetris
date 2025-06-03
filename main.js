@@ -1,4 +1,5 @@
 // ======== platno i skaliranje platna ========
+// ======== platno tetrisa ========
 const canvas = document.getElementById("tetris");
 const context = canvas.getContext("2d");
 
@@ -8,9 +9,18 @@ function resizeCanvas() {
   context.setTransform(1, 0, 0, 1, 0, 0);
   context.scale(canvas.width / 12, canvas.height / 20);
 }
-window.addEventListener("resize", resizeCanvas);
-resizeCanvas();
 
+
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas(); 
+window.addEventListener("resize", crtajSacuvanuKockicuResize);
+window.addEventListener("resize", crtajSledecuKockicuResize);
+function crtajSacuvanuKockicuResize(){
+  crtajSacuvanuKockicu(sacuvanaKockica)
+}
+function crtajSledecuKockicuResize(){
+  crtajSledecuKockicu(sledecaKockica)
+}
 // ======== varijable za igru ========
 let isRunning = false;
 let gameOver = false;
@@ -19,6 +29,7 @@ let isPaused = false;
 let dropCounter = 0;
 let dropInterval = 1000;
 let lastTime = 0;
+let highScore = 0;
 
 // ======== tetris kockice ========
 function napraviMatricu(w, h) {
@@ -130,7 +141,7 @@ const igrac = {
   score: 0,
 };
 
-let sledecaKockica = "T";
+let sledecaKockica = null;
 const kockice = "TJLOSZI";
 
 function igracReset() {
@@ -144,6 +155,9 @@ function igracReset() {
   if (preklapanje(arena, igrac)) {
     isRunning = false;
     gameOver = true;
+    if(highScore < igrac.score)
+      highScore = igrac.score;
+    document.getElementById("highScore").textContent = highScore;
     gameOverSound();
     document.getElementById("gameOverScreen").style.display = "block";
   }
@@ -244,7 +258,7 @@ function nacrtajMatricu(matrica, offset, ctx = context, isGhost = false) {
 }
 
 function crtaj() {
-  context.fillStyle = "#98D7C2";
+  context.fillStyle = context.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--panel');;
   context.fillRect(0, 0, 12, 20);
 
   const ghost = getGhostPosition();
@@ -256,8 +270,8 @@ function crtaj() {
 
 function crtajGrid() {
   context.save();
-  context.strokeStyle = "rgba(255, 255, 255, 0.5)";
-  context.lineWidth = 0.05;
+  context.strokeStyle = "#167D7F";
+  context.lineWidth = 0.02;
 
   for (let x = 0; x <= 12; x++) {
     context.beginPath();
@@ -303,15 +317,24 @@ function brzoSpustanje() {
 
 // ======== Pauziranje ========
 function togglePause() {
-  isPaused = !isPaused;
-  const btn = document.querySelector(".pause-button");
-  btn.textContent = isPaused ? "▶" : "||";
-  if (isPaused) {
-    sounds.bgm.pause();
-  } else {
-    update();
-    if(isRunning)
-        sounds.bgm.play();
+  if(isRunning){
+    isPaused = !isPaused;
+    const btn = document.querySelector("#pause");
+    btn.textContent = isPaused ? "RESUME" : "PAUSE";
+    if (isPaused) {
+      sounds.bgm.pause();
+      document.getElementById('paused').style.visibility = 'visible';
+      document.getElementById('tetris').style.visibility = 'hidden';
+      document.getElementById('nextBlockCanvas').style.visibility = 'hidden';
+      document.getElementById('savedBlockCanvas').style.visibility = 'hidden';
+    } else {
+      document.getElementById('paused').style.visibility = 'hidden';
+      document.getElementById('tetris').style.visibility = 'visible';
+      document.getElementById('nextBlockCanvas').style.visibility = 'visible';
+      document.getElementById('savedBlockCanvas').style.visibility = 'visible';
+      update();
+      sounds.bgm.play();
+    }
   }
 }
 
@@ -325,8 +348,7 @@ const scoreTable = {
 
 function updateScore(poeni) {
   igrac.score += poeni;
-  document.getElementById("liveScore").textContent =
-    "Your Score: " + igrac.score;
+  document.getElementById("liveScore").textContent = igrac.score;
 }
 
 // ========  Audio ========
@@ -353,7 +375,7 @@ function prikažiCestitku(redovi, poeni) {
   }, 2000);
 }
 
-// ======== 🎮 Input Handling ========
+// ======== Input Handling ========
 document.addEventListener("keydown", (event) => {
   if (!isRunning) return;
   switch (event.key) {
@@ -386,25 +408,22 @@ document.addEventListener("keydown", (event) => {
 });
 
 // ======== Kontrolni dugmići ========
-document.getElementById("startButton").addEventListener("click", () => {
-  document.getElementById("startButton").style.display = "none";
-  isRunning = true;
-  sledecaKockica = napraviKockicu(kockice[Math.floor(Math.random() * kockice.length)]);
-  igracReset();
-  updateScore(-igrac.score);
-  update();
-  sounds.bgm.play();
-});
 
 document.getElementById("restartButton").addEventListener("click", () => {
+    if(isPaused) return;
   arena.forEach((row) => row.fill(0));
   igrac.score = 0;
   gameOver = false;
   brojPostavljenihBlokova = 0;
   dropInterval = 1000;
-  document.getElementById("gameOverScreen").style.display = "none";
   isRunning = true;
   sledecaKockica = napraviKockicu(kockice[Math.floor(Math.random() * kockice.length)]);
+  sacuvanaKockica = null;
+  crtajSacuvanuKockicuResize();
+  crtajSledecuKockicuResize();
+  iskoristenHold = false;
+  resetujHoldContext();
+
   igracReset();
   updateScore(-igrac.score);
   update();
@@ -433,12 +452,15 @@ const savedContext = savedCanvas.getContext("2d");
 
 function crtajSacuvanuKockicu() {
   if (!sacuvanaKockica) return;
-  savedContext.clearRect(0, 0, savedCanvas.width, savedCanvas.height);
+  resetujHoldContext();
   const scaleX = savedCanvas.width / sacuvanaKockica[0].length;
   const scaleY = savedCanvas.height / sacuvanaKockica.length;
   savedContext.setTransform(1, 0, 0, 1, 0, 0);
   savedContext.scale(scaleX, scaleY);
   nacrtajMatricu(sacuvanaKockica, { x: 0, y: 0 }, savedContext);
+}
+function resetujHoldContext(){
+    savedContext.clearRect(0, 0, savedCanvas.width, savedCanvas.height);
 }
 
 function sacuvajKockicu() {
@@ -478,7 +500,9 @@ const boje = [
 
 
 // ========  Prikaz help ========
+
 document.getElementById("help").addEventListener("click", function (e) {
+  if(!isPaused) togglePause();
   e.preventDefault(); 
   document.getElementById("helpModal").style.display = "flex";
 });
@@ -486,3 +510,23 @@ document.getElementById("help").addEventListener("click", function (e) {
 function closeHelpModal() {
   document.getElementById("helpModal").style.display = "none";
 }
+
+// ========  Tema  ========
+
+function openThemeModal() {
+  if(!isPaused)togglePause();
+  document.getElementById("themeModal").style.display = "flex";
+}
+
+function closeThemeModal() {
+  document.getElementById("themeModal").style.display = "none";
+}
+
+
+// Slušaj poruku iz iframe-a
+window.addEventListener("message", (event) => {
+  const themeName = themes[event.data.theme];
+  document.querySelector("#helpModal iframe").contentWindow.postMessage({ theme: themeName }, "*");
+
+  applyTheme(themeName);
+});

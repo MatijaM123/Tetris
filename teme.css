@@ -1,0 +1,8 @@
+:root {
+  --bg: #DDFFE7;
+  --panel: #98D7C2;
+  --border: #167D7F;
+  --text: #075a5b;
+  --score-bg: var(--border);
+  --score-text: white;
+}

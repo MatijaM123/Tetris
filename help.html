@@ -4,24 +4,58 @@
   <meta charset="UTF-8">
   <title>Pomoć - Tetris</title>
   <link rel="stylesheet" href="stil-help.css">
+  <link rel="stylesheet" href="teme.css">
 </head>
 <body>
 
   <div class="help-container">
+    
     <h1>Pomoć i instrukcije</h1>
-    <p><strong>Cilj:</strong> Složite padajuće blokove da popune horizontalnu liniju</p>
-    <p><strong>Kontrole:</strong></p>
-    <ul>
-      <li><strong>Leva/desna strelica: </strong>Pomeri blok</li>
-      <li><strong>Dole strelica: </strong>Polako spusti blok</li>
-      <li><strong>Gore strelica: </strong>Brzo spusti blok</li>
-      <li><strong>Taster R: </strong>Rotiraj blok udesno</li>
-      <li><strong>Taster Q: </strong>Rotiraj blok ulevo</li>
-      <li><strong>Taster H: </strong>Hold</li>
-      <li><strong>Taster P: </strong>Pauziraj igru</li>
-    </ul>
-    <p>Popunjavajte linije da osvojite poene.</p>
+    <p><strong>Cilj:</strong> Složite padajuće blokove da popune horizontalnu liniju. <br>Popunjavajte linije da osvojite poene.</p>
+    <table>
+      <caption>Kontrole</caption>
+      <tr>
+        <th><strong>Taster</strong></th>
+        <th><strong>Kontrola</strong></th>
+      </tr>
+      <tr>
+        <td><b>Leva/desna strelica</b></td>
+        <td>Pomeri blok</td>
+      </tr>
+      <tr>
+        <td><b>Dole strelica</b></td>
+        <td>Polako spusti blok</td>
+      </tr>
+      <tr>
+        <td><b>Gore strelica</b></td>
+        <td>Pomeri blok</td>
+      </tr>
+      <tr>
+        <td><b>R</b></td>
+        <td>Rotiraj blok udesno</td>
+      </tr>
+      <tr>
+        <td><b>Q</b></td>
+        <td>Rotiraj blok ulevo</td>
+      </tr>
+      <tr>
+        <td><b>H</b></td>
+        <td>Sačuvaj blok</td>
+      </tr>
+      <tr>
+        <td><b>P</b></td>
+        <td>Pauziraj igru</td>
+      </tr>
+      
+    </table>
   </div>
-
+  <script src="theme.js"></script>
+  <script >
+    window.addEventListener("message", (event) => {
+  if (event.data.theme) {
+    applyTheme(event.data.theme);
+  }
+});
+  </script>
 </body>
 </html>

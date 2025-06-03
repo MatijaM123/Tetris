@@ -1,0 +1,40 @@
+body {
+  font-family: Tahoma, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* vertical centering */
+  align-items: center;     /* horizontal centering */
+}
+
+
+
+.theme-toggle {
+  display: inline-flex;
+  border: 2px solid var(--text);
+  border-radius: 30px;
+  overflow: hidden;
+  width: fit-content;
+}
+
+.theme-toggle input[type="radio"] {
+  display: none;
+}
+
+.theme-toggle label {
+  padding: 10px 20px;
+  cursor: pointer;
+  background-color: transparent;
+  color: var(--text);
+  transition: background-color 0.3s, color 0.3s;
+  font-weight: bold;
+  user-select: none;
+}
+
+.theme-toggle input[type="radio"]:checked + label {
+  background-color: var(--text);
+  color: var(--panel);
+}
